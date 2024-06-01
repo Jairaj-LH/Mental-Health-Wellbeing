@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+  <title>ChatBot</title>
+  <head>
+    <script>
+      function uploadFile() {
+        var file = document.getElementById('fileInput').files[0];
+        if (file) {
+          var formData = new FormData();
+          formData.append('file', file);
+          
+          fetch('http://127.0.0.1:5000/train', {
+            method: 'POST',
+            body: formData
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data); // Log the response data
+            
+            // Display the accuracies in the chatbox
+            var botHtml = '<p class="botText"><span>Individual accuracies:</span></p>';
+            for (var target in data.accuracies) {
+              botHtml += '<p class="botText"><span>' + target + ': ' + (data.accuracies[target] * 100).toFixed(2) + '%</span></p>';
+            }
+            $("#chatbox").append(botHtml);
+            document
+              .getElementById("userInput")
+              .scrollIntoView({ block: "start", behavior: "smooth" });
+          })
+          .catch(error => {
+            console.error('Error:', error);
+          });
+        } else {
+          console.error("No file selected");
+        }
+      }
+    </script>
+    
+    
+    <style>
+      body {
+        font-family: monospace;
+      }
+      h1 {
+        color: black;
+        display: inline-block;
+        font-size: 2em;
+        margin: 0;
+        padding: 10px;
+      }
+      #chatbox {
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        margin-top: 60px;
+      }
+      #userInput {
+        margin-left: auto;
+        margin-right: auto;
+        width: 40%;
+        margin-top: 20px; /* Adjusted margin top */
+      }
+      #textInput {
+        width: calc(100% - 85px); /* Adjusted input width */
+        border: none;
+        border-bottom: 3px solid black;
+        font-family: monospace;
+        font-size: 17px;
+      }
+      .userText {
+        color: black;
+        font-family: monospace;
+        font-size: 17px;
+        text-align: right;
+        line-height: 30px;
+      }
+      .userText span {
+        background-color: #e699ff;
+        padding: 10px;
+        border-radius: 2px;
+      }
+      .botText {
+        color: black;
+        font-family: monospace;
+        font-size: 17px;
+        text-align: left;
+        line-height: 30px;
+      }
+      .botText span {
+        background-color: #ffdd99;
+        padding: 10px;
+        border-radius: 2px;
+      }
+      #tidbit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 300px;
+      }
+      .boxed {
+        margin-left: auto;
+        margin-right: auto;
+        width: 78%;
+        margin-top: 60px;
+        border: 1px solid green;
+      }
+      .box {
+        border: 2px solid black;
+      }
+      #fileInput {
+        display: block; /* Make file input visible */
+        margin-top: 10px; /* Adjusted margin top for file input */
+      }
+      #fileName {
+        margin-left: 10px;
+      }
+      #uploadButton {
+        display: block; /* Make upload button display as block */
+        margin-top: 10px; /* Adjusted margin top for upload button */
+      }
+    
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('ima1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh; /* Set height to 100% of viewport height */
+            overflow: hidden; /* Hide scrollbars */
+        }
+
+    </style>
+  </head>
+  <body>
+    <center>
+      <h1>
+        Welcome
+      </h1>
+    </center>
+    <div class="box"></div>
+    <div class="boxed">
+      <div>
+        <div id="chatbox">
+          <p class="botText">
+            <span>Hello....</span>
+          </p>
+        </div>
+        <div id="userInput">
+          <input type="file" id="fileInput" accept=".xlsx">
+          <span id="fileName"></span> <!-- Display selected file name here -->
+          <button id="uploadButton" onclick="uploadFile()">Upload</button>
+        </div>
+      </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script>
+        // Display selected file name
+        $('#fileInput').change(function() {
+          var fileName = $(this).val().split('\\').pop(); // Get the file name
+          $('#fileName').text(fileName); // Display the file name
+        });
+      </script>
+    </div>
+  </body>
+</html>
